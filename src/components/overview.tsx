@@ -17,7 +17,7 @@ export default function Overview() {
         {nodes.map((node) => (
           <div
             key={node.id}
-            className="bg-gray-400 aspect-square w-32 p-2.5 overflow-hidden"
+            className="bg-background-light aspect-square w-32 p-2.5 overflow-hidden"
           >
             <RenderNode node={node} />
           </div>

@@ -30,33 +30,33 @@ export default function CreateNodeButton() {
     <>
       <button
         onClick={() => setIsModalOpen(true)}
-        className="bg-gray-700 text-white px-4 py-2 rounded-full w-full hover:bg-gray-800 transition-colors"
+        className="bg-primary px-4 py-2 rounded-full w-full hover:bg-primary-dark"
       >
         Create New Node
       </button>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/25 backdrop-blur-xs flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-96 text-black">
+        <div className="fixed inset-0 bg-black/25 backdrop-blur-xs flex items-center justify-center shadow-2xl">
+          <div className="bg-background-light p-6 rounded-lg w-96 ">
             <h2 className="text-xl font-bold mb-4">Create New Node</h2>
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-current/80">
                   Node Name
                 </label>
                 <input
                   {...register("name", { required: true })}
                   type="text"
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  className="mt-1 block w-full border border-neutral-300 rounded-md shadow-sm p-2"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-current/80">
                   Node Type
                 </label>
                 <select
                   {...register("type", { required: true })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  className="mt-1 block w-full border border-neutral-300 rounded-md shadow-sm p-2"
                 >
                   <option value="file">File</option>
                   <option value="bookmark">Bookmark</option>
@@ -65,14 +65,14 @@ export default function CreateNodeButton() {
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-300 rounded-md"
+                  className="px-4 py-2 bg-neutral-800 rounded-md shadow-lg"
                   onClick={() => setIsModalOpen(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md"
+                  className="px-4 py-2 bg-primary rounded-md shadow-lg hover:bg-primary-dark"
                 >
                   Create
                 </button>

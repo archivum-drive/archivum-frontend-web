@@ -1,11 +1,10 @@
 import { ExternalLinkIcon } from "lucide-react";
 import CreateNodeButton from "./createnodebutton";
-import Link from "./link";
 
 export default function Header() {
   return (
-    <header className="bg-gray-400 text-white p-4 fixed h-[calc(100%-1.5rem)] w-56 top-0 m-3 rounded-lg">
-      <h1 className="text-2xl font-bold">Archivum</h1>
+    <header className="bg-background-light  p-4 fixed h-[calc(100%-1.5rem)] w-56 top-0 m-3 rounded-lg ">
+      <h1 className="text-3xl font-bold font-[BBH_Sans_Hegarty]">Archivum</h1>
 
       <div className="w-full h-8 my-4 relative">
         <input
@@ -13,14 +12,14 @@ export default function Header() {
           placeholder="Search..."
           className="bg-white rounded-full w-full h-full text-black px-2"
         />
-        <button className="absolute right-1.5 top-1 text-gray-400 cursor-pointer">
+        <button className="absolute right-1.5 top-1 text-neutral-400 cursor-pointer">
           <ExternalLinkIcon />
         </button>
       </div>
 
       <CreateNodeButton />
 
-      <nav>
+      {/* <nav>
         <ul className="mt-8 space-y-4">
           <li>
             <Link href="/">Overview</Link>
@@ -32,7 +31,7 @@ export default function Header() {
             <Link href="/bookmarks">Bookmarks</Link>
           </li>
         </ul>
-      </nav>
+      </nav> */}
     </header>
   );
 }
