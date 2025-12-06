@@ -1,38 +1,24 @@
-import { BookmarkNode, FileNode, type Node } from "../interfaces/node";
-import { getNodes, nodeUpdate } from "../mock/storage";
+import { useState } from "react";
+import { getNodes } from "../mock/storage";
+import { NodesTable } from "./nodes-table";
 
 export default function Overview() {
-  let nodes: Node[] = [];
-
-  function fetchNodes() {
-    nodes = getNodes();
+  const [nodes, setNodes] = useState(getNodes());
+  function refreshData() {
+    setNodes(() => [...getNodes()]);
   }
-
-  fetchNodes();
-  nodeUpdate(() => fetchNodes);
 
   return (
-    <>
-      <div className="flex gap-6 m-8">
-        {nodes.map((node) => (
-          <div
-            key={node.id}
-            className="bg-background-light aspect-square w-32 p-2.5 overflow-hidden"
-          >
-            <RenderNode node={node} />
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
+    <div>
+      <h1 className="mb-6 text-4xl">All my Data</h1>
+      <NodesTable nodes={nodes} />
 
-function RenderNode({ node }: { node: Node }) {
-  if (node instanceof FileNode) {
-    return <div>File: {node.label}</div>;
-  } else if (node instanceof BookmarkNode) {
-    return <div>Bookmark: {node.url}</div>;
-  } else {
-    return <div>Unknown Node Type</div>;
-  }
+      <div className="h-2" />
+      <div>
+        <button onClick={refreshData} className="cursor-pointer">
+          Refresh Data
+        </button>
+      </div>
+    </div>
+  );
 }

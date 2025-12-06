@@ -1,33 +1,43 @@
-export interface Node {
-  id: string;
-  date_created: string;
-  date_updated: string;
+interface NamedNode {
+  getName(): string;
 }
 
-export class FileNode implements Node {
+export class Node {
   id: string;
+  tags: string[] = [];
   date_created: string;
   date_updated: string;
-  label: string;
 
-  constructor(id: string, label: string) {
+  constructor(id: string, tags: string[] = ["default"]) {
     this.id = id;
-    this.label = label;
+    this.tags = tags;
     this.date_created = new Date().toISOString();
     this.date_updated = new Date().toISOString();
   }
 }
 
-export class BookmarkNode implements Node {
-  id: string;
-  date_created: string;
-  date_updated: string;
+export class FileNode extends Node implements NamedNode {
+  label: string;
+
+  constructor(id: string, label: string) {
+    super(id);
+    this.label = label;
+  }
+
+  getName(): string {
+    return this.label;
+  }
+}
+
+export class BookmarkNode extends Node implements NamedNode {
   url: string;
 
   constructor(id: string, url: string) {
-    this.id = id;
+    super(id);
     this.url = url;
-    this.date_created = new Date().toISOString();
-    this.date_updated = new Date().toISOString();
+  }
+
+  getName(): string {
+    return this.url;
   }
 }
