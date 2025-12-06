@@ -3,8 +3,10 @@ import CreateNodeButton from "./createnodebutton";
 
 export default function Header() {
   return (
-    <header className="bg-background-light  p-4 fixed h-[calc(100%-1.5rem)] w-56 top-0 m-3 rounded-lg ">
-      <h1 className="text-3xl font-bold font-[BBH_Sans_Hegarty]">Archivum</h1>
+    <header className="bg-background-light p-4 fixed h-[calc(100%-1.5rem)] w-56 top-0 m-3 rounded-lg ">
+      <h1 className="text-3xl font-bold font-[BBH_Sans_Hegarty] my-2">
+        Archivum
+      </h1>
 
       <div className="w-full h-8 my-4 relative">
         <input

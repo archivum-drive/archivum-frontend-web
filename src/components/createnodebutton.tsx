@@ -56,7 +56,7 @@ export default function CreateNodeButton() {
                 </label>
                 <select
                   {...register("type", { required: true })}
-                  className="mt-1 block w-full border border-neutral-300 rounded-md shadow-sm p-2"
+                  className="mt-1 block w-full border border-neutral-300 rounded-md shadow-sm p-2 bg-background-light"
                 >
                   <option value="file">File</option>
                   <option value="bookmark">Bookmark</option>

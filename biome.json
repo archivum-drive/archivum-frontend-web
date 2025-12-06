@@ -5,10 +5,19 @@
   "formatter": { "enabled": true, "indentStyle": "space" },
   "linter": {
     "enabled": true,
-    "rules": { "recommended": false },
+    "rules": {
+      "recommended": false,
+      "nursery": {
+        "useSortedClasses": {
+          "level": "warn",
+          "fix": "safe"
+        }
+      }
+    },
     "includes": ["**", "!dist"]
   },
   "javascript": { "formatter": { "quoteStyle": "double" } },
+  "html": { "experimentalFullSupportEnabled": true },
   "overrides": [
     {
       "includes": ["**/*.{ts,tsx}"],
