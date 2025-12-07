@@ -1,22 +1,38 @@
 import { BookmarkNode, FileNode, type Node } from "../interfaces/node";
 
-const callbacks: Array<() => void> = [];
+export class Storage {
+  private nodes: Node[] = [
+    new FileNode("1", "Document 1", [{ name: "important", color: "red" }]),
+    new FileNode("2", "Image 1", [{ name: "media", color: "blue" }]),
+    new BookmarkNode("3", "https://example.com", [
+      { name: "reference", color: "green" },
+      { name: "important", color: "red" },
+    ]),
+  ];
 
-const nodes: Node[] = [
-  new FileNode("1", "Document 1"),
-  new FileNode("2", "Image 1"),
-  new BookmarkNode("3", "https://example.com"),
-];
+  public getNodes(): Node[] {
+    return this.nodes;
+  }
 
-export function getNodes(): Node[] {
-  return nodes;
+  public addNode(node: Node): void {
+    this.nodes.push(node);
+  }
+
+  public deleteNode(nodeId: string): void {
+    const index = this.nodes.findIndex((node) => node.id === nodeId);
+    if (index !== -1) {
+      this.nodes.splice(index, 1);
+    }
+  }
 }
 
-export function addNode(node: Node): void {
-  nodes.push(node);
-  callbacks.forEach((callback) => callback());
-}
+export class SingletonStorage {
+  private static instance: Storage;
 
-export function nodeUpdate(callback: () => void): void {
-  callbacks.push(callback);
+  public static getInstance(): Storage {
+    if (!SingletonStorage.instance) {
+      SingletonStorage.instance = new Storage();
+    }
+    return SingletonStorage.instance;
+  }
 }

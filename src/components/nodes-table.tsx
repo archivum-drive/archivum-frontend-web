@@ -1,3 +1,4 @@
+import { FileIcon, Link2Icon, PlusIcon } from "@radix-ui/react-icons";
 import {
   type ColumnDef,
   flexRender,
@@ -5,7 +6,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { BookmarkNode, FileNode, type Node } from "../interfaces/node";
+import { BookmarkNode, FileNode, type Node, Tag } from "../interfaces/node";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "./ui/context-menu";
 import {
   Table,
   TableBody,
@@ -14,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { TagComponent } from "./ui/tag";
 
 export function NodesTable(props: NodeTableProps) {
   const { nodes } = props;
@@ -21,18 +29,27 @@ export function NodesTable(props: NodeTableProps) {
   const columns = useMemo<ColumnDef<Node>[]>(
     () => [
       {
-        header: "ID",
+        header: "",
         accessorKey: "id",
-        cell: (info) => <div>{String(info.getValue())}</div>,
+        minSize: 0,
+        size: 0,
+        cell: (info) => <RenderType node={info.row.original} />,
       },
       {
         header: "Details",
-        cell: (info) => <RenderNode node={info.row.original} />,
+        cell: (info) => <RenderName node={info.row.original} />,
       },
       {
         header: "Tags",
         accessorKey: "tags",
-        cell: (info) => <div>{info.getValue().join(", ")}</div>,
+        cell: (info) => <RenderTags tags={info.getValue<Tag[]>()} />,
+      },
+      {
+        header: () => <div className="text-right">Date Modified</div>,
+        accessorKey: "date_updated",
+        cell: (info) => (
+          <div className="text-right">{info.getValue<String>()}</div>
+        ),
       },
     ],
     [],
@@ -61,13 +78,17 @@ export function NodesTable(props: NodeTableProps) {
   });
 
   return (
-    <div className="overflow-hidden rounded-md border">
+    <div className="border border-text/10">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} colSpan={header.colSpan}>
+                <TableHead
+                  key={header.id}
+                  colSpan={header.colSpan}
+                  style={{ width: `${header.getSize()}px` }}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -81,13 +102,18 @@ export function NodesTable(props: NodeTableProps) {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
+            <NodeContextMenu
+              node={row.original}
+              deleteNode={(nodeId) => props.deleteNode(nodeId)}
+            >
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </NodeContextMenu>
           ))}
         </TableBody>
       </Table>
@@ -97,9 +123,10 @@ export function NodesTable(props: NodeTableProps) {
 
 interface NodeTableProps {
   nodes: Node[];
+  deleteNode: (nodeId: string) => void;
 }
 
-function RenderNode({ node }: { node: Node }) {
+function RenderName({ node }: { node: Node }) {
   if (node instanceof FileNode) {
     return <div>File: {node.label}</div>;
   } else if (node instanceof BookmarkNode) {
@@ -107,4 +134,57 @@ function RenderNode({ node }: { node: Node }) {
   } else {
     return <div>Unknown Node Type</div>;
   }
+}
+
+function RenderTags({ tags }: { tags: Tag[] }) {
+  return (
+    <>
+      {tags.map((tag) => (
+        <TagComponent key={tag.name} name={tag.name} color={tag.color} />
+      ))}
+      <TagComponent className="aspect-square bg-transparent p-0 hover:bg-white/5">
+        <div className="flex h-full w-full items-center justify-center">
+          <PlusIcon />
+        </div>
+      </TagComponent>
+    </>
+  );
+}
+
+function RenderType({ node }: { node: Node }) {
+  if (node instanceof FileNode) {
+    return (
+      <div className="mx-auto flex h-full w-full items-center justify-center">
+        <FileIcon />
+      </div>
+    );
+  } else if (node instanceof BookmarkNode) {
+    return (
+      <div className="mx-auto flex h-full w-full items-center justify-center">
+        <Link2Icon />
+      </div>
+    );
+  }
+
+  return <div className="mx-auto flex h-12 items-center justify-center">?</div>;
+}
+
+function NodeContextMenu(props: {
+  node: Node;
+  children: React.ReactNode;
+  deleteNode: (nodeId: string) => void;
+}) {
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>{props.children}</ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem
+          variant="destructive"
+          onSelect={() => props.deleteNode(props.node.id)}
+        >
+          Delete Node
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
 }

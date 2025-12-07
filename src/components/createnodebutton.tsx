@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { BookmarkNode, FileNode } from "../interfaces/node";
-import { addNode } from "../mock/storage";
+import { SingletonStorage } from "../mock/storage";
 
 type Inputs = {
   name: string;
@@ -13,6 +13,8 @@ export default function CreateNodeButton() {
 
   const { register, handleSubmit } = useForm<Inputs>();
 
+  const storage = SingletonStorage.getInstance();
+
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data);
     const { name, type } = data;
@@ -22,7 +24,7 @@ export default function CreateNodeButton() {
     } else {
       newNode = new BookmarkNode(Date.now().toString(), name);
     }
-    addNode(newNode);
+    storage.addNode(newNode);
     setIsModalOpen(false);
   };
 
