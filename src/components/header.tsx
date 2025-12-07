@@ -3,18 +3,16 @@ import CreateNodeButton from "./createnodebutton";
 
 export default function Header() {
   return (
-    <header className="bg-background-light p-4 fixed h-[calc(100%-1.5rem)] w-56 top-0 m-3 rounded-lg ">
-      <h1 className="text-3xl font-bold font-[BBH_Sans_Hegarty] my-2">
-        Archivum
-      </h1>
+    <header className="fixed top-0 m-3 h-[calc(100%-1.5rem)] w-56 rounded-lg bg-background-light p-4">
+      <h1 className="my-2 font-[Orbit] font-thin text-3xl">Archivum</h1>
 
-      <div className="w-full h-8 my-4 relative">
+      <div className="relative my-4 h-8 w-full">
         <input
           type="text"
           placeholder="Search..."
-          className="bg-white rounded-full w-full h-full text-black px-2"
+          className="h-full w-full rounded-full bg-white px-2 text-black"
         />
-        <button className="absolute right-1.5 top-1 text-neutral-400 cursor-pointer">
+        <button className="absolute top-1 right-1.5 cursor-pointer text-neutral-400">
           <ExternalLinkIcon />
         </button>
       </div>

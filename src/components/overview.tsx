@@ -10,7 +10,7 @@ export default function Overview() {
 
   return (
     <div>
-      <h1 className="mb-6 text-4xl">All my Data</h1>
+      <h1 className="mb-6 font-[Orbit] text-4xl">All my Data</h1>
       <NodesTable nodes={nodes} />
 
       <div className="h-2" />
