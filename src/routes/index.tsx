@@ -1,10 +1,15 @@
 "use client";
 
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { NodesTable } from "../components/nodes-table";
 import { SingletonStorage } from "../mock/storage";
-import { NodesTable } from "./nodes-table";
 
-export default function Overview() {
+export const Route = createFileRoute("/")({
+  component: Overview,
+});
+
+function Overview() {
   const storage = SingletonStorage.getInstance();
 
   const [nodes, setNodes] = useState(storage.getNodes());
