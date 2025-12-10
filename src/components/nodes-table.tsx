@@ -6,7 +6,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { BookmarkNode, FileNode, type Node, Tag } from "../interfaces/node";
+import { BookmarkNode, FileNode, type Node } from "../lib/node";
+import { Tag } from "../lib/tag";
 import {
   ContextMenu,
   ContextMenuContent,

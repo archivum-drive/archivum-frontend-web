@@ -1,4 +1,4 @@
-import { BookmarkNode, FileNode, type Node } from "../interfaces/node";
+import { BookmarkNode, FileNode, type Node } from "../lib/node";
 
 export class Storage {
   private nodes: Node[] = [

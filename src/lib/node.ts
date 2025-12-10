@@ -1,3 +1,5 @@
+import type { Tag } from "./tag";
+
 interface NamedNode {
   getName(): string;
 }
@@ -13,18 +15,6 @@ export class Node {
     this.tags = tags;
     this.date_created = new Date().toLocaleString("de-DE");
     this.date_updated = new Date().toLocaleString("de-DE");
-  }
-}
-
-type TagColor = "red" | "blue" | "green" | "yellow" | "purple" | "gray";
-
-export class Tag {
-  name: string;
-  color?: TagColor;
-
-  constructor(name: string, color?: TagColor) {
-    this.name = name;
-    this.color = color;
   }
 }
 

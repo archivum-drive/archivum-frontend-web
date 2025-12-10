@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { BookmarkNode, FileNode } from "../interfaces/node";
+import { BookmarkNode, FileNode } from "../lib/node";
 import { SingletonStorage } from "../mock/storage";
 
 type Inputs = {
