@@ -7,14 +7,14 @@ import { routeTree } from "./routeTree.gen";
 // Set up a Router instance
 const router = createRouter({
   routeTree,
-  defaultPreload: 'intent',
+  defaultPreload: "intent",
   scrollRestoration: true,
-})
+});
 
 // Register things for typesafety
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
-    router: typeof router
+    router: typeof router;
   }
 }
 
