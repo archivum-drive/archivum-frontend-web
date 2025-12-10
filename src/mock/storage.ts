@@ -1,4 +1,5 @@
 import { BookmarkNode, FileNode, type Node } from "../lib/node";
+import type { Tag } from "../lib/tag";
 
 export class Storage {
   private nodes: Node[] = [
@@ -9,6 +10,23 @@ export class Storage {
       { name: "important", color: "red" },
     ]),
   ];
+
+  private tags: Tag[] = [
+    { name: "important", color: "red" },
+    { name: "media", color: "blue" },
+    { name: "reference", color: "green" },
+  ];
+
+  public getTags() {
+    return this.tags;
+  }
+
+  public deleteTag(tagName: string): void {
+    this.tags = this.tags.filter((tag) => tag.name !== tagName);
+    this.nodes.forEach((node) => {
+      node.tags = node.tags.filter((tag) => tag.name !== tagName);
+    });
+  }
 
   public getNodes(): Node[] {
     return this.nodes;
