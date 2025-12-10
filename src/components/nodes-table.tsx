@@ -29,15 +29,8 @@ export function NodesTable(props: NodeTableProps) {
   const columns = useMemo<ColumnDef<Node>[]>(
     () => [
       {
-        header: "",
-        accessorKey: "id",
-        minSize: 0,
-        size: 0,
-        cell: (info) => <RenderType node={info.row.original} />,
-      },
-      {
         header: "Details",
-        cell: (info) => <RenderName node={info.row.original} />,
+        cell: (info) => <RenderNode node={info.row.original} />,
       },
       {
         header: "Tags",
@@ -47,6 +40,13 @@ export function NodesTable(props: NodeTableProps) {
       {
         header: () => <div className="text-right">Date Modified</div>,
         accessorKey: "date_updated",
+        cell: (info) => (
+          <div className="text-right">{info.getValue<String>()}</div>
+        ),
+      },
+      {
+        header: () => <div className="text-right">Date Created</div>,
+        accessorKey: "date_created",
         cell: (info) => (
           <div className="text-right">{info.getValue<String>()}</div>
         ),
@@ -126,6 +126,14 @@ interface NodeTableProps {
   deleteNode: (nodeId: string) => void;
 }
 
+function RenderNode({ node }: { node: Node }) {
+  return (
+    <div className="flex items-center gap-2">
+      <RenderType node={node} />
+      <RenderName node={node} />
+    </div>
+  );
+}
 function RenderName({ node }: { node: Node }) {
   if (node instanceof FileNode) {
     return <div>File: {node.label}</div>;
@@ -153,17 +161,9 @@ function RenderTags({ tags }: { tags: Tag[] }) {
 
 function RenderType({ node }: { node: Node }) {
   if (node instanceof FileNode) {
-    return (
-      <div className="mx-auto flex h-full w-full items-center justify-center">
-        <FileIcon />
-      </div>
-    );
+    return <FileIcon />;
   } else if (node instanceof BookmarkNode) {
-    return (
-      <div className="mx-auto flex h-full w-full items-center justify-center">
-        <Link2Icon />
-      </div>
-    );
+    return <Link2Icon />;
   }
 
   return <div className="mx-auto flex h-12 items-center justify-center">?</div>;
