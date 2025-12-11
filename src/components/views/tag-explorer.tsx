@@ -1,11 +1,6 @@
 import { Link as RouterLink } from "@tanstack/react-router";
-import { useCallback, useMemo, useState } from "react";
-import {
-  findTagNode,
-  joinSegments,
-  type Tag,
-  type TagTreeNode,
-} from "../../lib/tag";
+import { useMemo, useState } from "react";
+import { findTagNode, joinSegments, type TagTreeNode } from "../../lib/tag";
 import { SingletonStorage } from "../../mock/storage";
 import { TagsTable } from "../tables/tags-table";
 import {

@@ -53,7 +53,7 @@ export function TagsTable(props: TagsTableProps) {
   });
 
   return (
-    <div className="border border-text/10">
+    <div className="border border-muted">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

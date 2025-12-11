@@ -86,7 +86,7 @@ export function NodesTable(props: NodeTableProps) {
   });
 
   return (
-    <div className="border border-text/10">
+    <div className="border border-muted">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
