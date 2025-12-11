@@ -49,5 +49,5 @@ body {
 
   --color-destructive: var(--destructive);
 
-  --color-muted: var(--background-color-light);
+  --color-muted: color-mix(in oklab, var(--text-color) 10%, transparent)
 }

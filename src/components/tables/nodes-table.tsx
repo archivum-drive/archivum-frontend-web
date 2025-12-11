@@ -1,4 +1,5 @@
-import { FileIcon, Link2Icon, PlusIcon } from "@radix-ui/react-icons";
+import { FileIcon, Link2Icon } from "@radix-ui/react-icons";
+import { Link as RouterLink } from "@tanstack/react-router";
 import {
   type ColumnDef,
   flexRender,
@@ -14,6 +15,12 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "../ui/context-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown";
 import {
   Table,
   TableBody,
@@ -149,17 +156,24 @@ function RenderTags({ tags }: { tags: Tag[] }) {
   return (
     <>
       {tags.map((tag) => (
-        <TagComponentHoverable
-          key={tag.name}
-          name={tag.name}
-          color={tag.color}
-        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <TagComponentHoverable
+              key={tag.name}
+              name={tag.name}
+              color={tag.color}
+            />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>
+              <RouterLink to="/tags/$" params={{ _splat: tag.name }}>
+                Go to label
+              </RouterLink>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ))}
-      <TagComponentHoverable className="aspect-square bg-transparent p-0 hover:bg-white/5">
-        <div className="flex h-full w-full items-center justify-center">
-          <PlusIcon />
-        </div>
-      </TagComponentHoverable>
+      {/* <TagSkeleton /> */}
     </>
   );
 }
