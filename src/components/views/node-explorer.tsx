@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SingletonStorage } from "../../mock/storage";
 import { NodesTable } from "../tables/nodes-table";
+import { RoundedButton } from "../ui/button";
 
 export function NodeExplorer() {
   const storage = SingletonStorage.getInstance();
@@ -17,16 +18,15 @@ export function NodeExplorer() {
   }
 
   return (
-    <div>
-      <h1 className="mb-6 font-[Orbit] text-4xl">All my Data</h1>
-      <NodesTable nodes={nodes} deleteNode={(nodeId) => deleteNode(nodeId)} />
+    <div className="space-y-4">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="font-[Orbit] text-4xl">All my Data</h1>
+        </div>
+        <RoundedButton onClick={refreshData}>Refresh</RoundedButton>
+      </header>
 
-      <div className="h-2" />
-      <div>
-        <button onClick={refreshData} className="cursor-pointer">
-          Refresh Data
-        </button>
-      </div>
+      <NodesTable nodes={nodes} deleteNode={deleteNode} />
     </div>
   );
 }
