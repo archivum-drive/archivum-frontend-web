@@ -43,11 +43,26 @@ export function TagComponent(props: {
   return (
     <div
       className={cn(
-        `inline-block rounded-full px-2 py-0.5 ${colorLight} ${colorDark} my-0 mr-1.5 h-[25px] cursor-pointer overflow-hidden border border-current/10 text-sm hover:border-current/25 hover:bg-current/33`,
+        `inline-block rounded-full px-2 py-0.5 ${colorLight} ${colorDark} my-0 mr-1.5 h-[25px] overflow-hidden border border-current/10 text-sm`,
         props.className,
       )}
     >
       {name ? name : props.children}
     </div>
   );
+}
+
+export function TagComponentHoverable(props: {
+  name?: string;
+  color?: "red" | "blue" | "green" | "yellow" | "purple" | "gray" | "gray";
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  return TagComponent({
+    ...props,
+    className: cn(
+      "hover:border-current/25 hover:bg-current/33 cursor-pointer",
+      props.className,
+    ),
+  });
 }

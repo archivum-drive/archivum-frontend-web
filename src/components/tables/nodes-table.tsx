@@ -6,14 +6,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { BookmarkNode, FileNode, type Node } from "../lib/node";
-import { Tag } from "../lib/tag";
+import { BookmarkNode, FileNode, type Node } from "../../lib/node";
+import { Tag } from "../../lib/tag";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "./ui/context-menu";
+} from "../ui/context-menu";
 import {
   Table,
   TableBody,
@@ -21,8 +21,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { TagComponent } from "./ui/tag";
+} from "../ui/table";
+import { TagComponentHoverable } from "../ui/tag";
 
 export function NodesTable(props: NodeTableProps) {
   const { nodes } = props;
@@ -149,13 +149,17 @@ function RenderTags({ tags }: { tags: Tag[] }) {
   return (
     <>
       {tags.map((tag) => (
-        <TagComponent key={tag.name} name={tag.name} color={tag.color} />
+        <TagComponentHoverable
+          key={tag.name}
+          name={tag.name}
+          color={tag.color}
+        />
       ))}
-      <TagComponent className="aspect-square bg-transparent p-0 hover:bg-white/5">
+      <TagComponentHoverable className="aspect-square bg-transparent p-0 hover:bg-white/5">
         <div className="flex h-full w-full items-center justify-center">
           <PlusIcon />
         </div>
-      </TagComponent>
+      </TagComponentHoverable>
     </>
   );
 }

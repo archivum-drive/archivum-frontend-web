@@ -5,7 +5,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { Tag } from "../lib/tag";
+import { Tag } from "../../lib/tag";
 
 import {
   Table,
@@ -14,8 +14,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { TagComponent } from "./ui/tag";
+} from "../ui/table";
+import { TagComponent } from "../ui/tag";
 
 export function TagsTable(props: TagsTableProps) {
   const { tags } = props;

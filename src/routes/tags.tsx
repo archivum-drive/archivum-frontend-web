@@ -2,7 +2,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { TagsTable } from "../components/tags-table";
+import { TagsTable } from "../components/tables/tags-table";
 import type { Tag } from "../lib/tag";
 import { SingletonStorage } from "../mock/storage";
 
