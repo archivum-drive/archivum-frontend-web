@@ -1,3 +1,4 @@
+import { Link as RouterLink } from "@tanstack/react-router";
 import {
   type ColumnDef,
   flexRender,
@@ -5,8 +6,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { Tag } from "../../lib/tag";
-
+import { joinSegments, Tag, type TagTreeNode } from "../../lib/tag";
 import {
   Table,
   TableBody,
@@ -18,17 +18,27 @@ import {
 import { TagComponent } from "../ui/tag";
 
 export function TagsTable(props: TagsTableProps) {
-  const { tags } = props;
+  const { entries } = props;
+
+  const tags: Tag[] = useMemo(() => {
+    const result: Tag[] = [];
+    entries.children.forEach((child) => {
+      result.push(new Tag(joinSegments(child.fullPathSegments), child.color));
+    });
+    return result;
+  }, [entries]);
 
   const columns = useMemo<ColumnDef<Tag>[]>(
     () => [
       {
         header: "Tag",
         cell: (info) => (
-          <TagComponent
-            name={info.row.original.name}
-            color={info.row.original.color}
-          />
+          <RouterLink to="/tags/$" params={{ _splat: info.row.original.name }}>
+            <TagComponent
+              name={info.row.original.name}
+              color={info.row.original.color}
+            />
+          </RouterLink>
         ),
       },
     ],
@@ -82,6 +92,6 @@ export function TagsTable(props: TagsTableProps) {
 }
 
 interface TagsTableProps {
-  tags: Tag[];
-  deleteTag: (tagName: string) => void;
+  entries: TagTreeNode;
+  // deleteTag: (tagName: string) => void;
 }

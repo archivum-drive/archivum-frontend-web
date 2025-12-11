@@ -9,55 +9,48 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TagsRouteImport } from './routes/tags'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TagsSplatRouteImport } from './routes/tags.$'
 
-const TagsRoute = TagsRouteImport.update({
-  id: '/tags',
-  path: '/tags',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TagsSplatRoute = TagsSplatRouteImport.update({
+  id: '/tags/$',
+  path: '/tags/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/tags': typeof TagsRoute
+  '/tags/$': typeof TagsSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/tags': typeof TagsRoute
+  '/tags/$': typeof TagsSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/tags': typeof TagsRoute
+  '/tags/$': typeof TagsSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/tags'
+  fullPaths: '/' | '/tags/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/tags'
-  id: '__root__' | '/' | '/tags'
+  to: '/' | '/tags/$'
+  id: '__root__' | '/' | '/tags/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  TagsRoute: typeof TagsRoute
+  TagsSplatRoute: typeof TagsSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tags': {
-      id: '/tags'
-      path: '/tags'
-      fullPath: '/tags'
-      preLoaderRoute: typeof TagsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -65,12 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tags/$': {
+      id: '/tags/$'
+      path: '/tags/$'
+      fullPath: '/tags/$'
+      preLoaderRoute: typeof TagsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  TagsRoute: TagsRoute,
+  TagsSplatRoute: TagsSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

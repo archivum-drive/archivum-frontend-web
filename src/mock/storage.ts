@@ -1,10 +1,16 @@
 import { BookmarkNode, FileNode, type Node } from "../lib/node";
-import type { Tag } from "../lib/tag";
+import { buildTagTree, type Tag } from "../lib/tag";
 
 export class Storage {
   private nodes: Node[] = [
-    new FileNode("1", "Document 1", [{ name: "important", color: "red" }]),
-    new FileNode("2", "Image 1", [{ name: "media", color: "blue" }]),
+    new FileNode("1", "Document 1", [
+      { name: "important", color: "red" },
+      { name: "travel/2024", color: "yellow" },
+    ]),
+    new FileNode("2", "Image 1", [
+      { name: "media", color: "blue" },
+      { name: "photo/portrait", color: "purple" },
+    ]),
     new BookmarkNode("3", "https://example.com", [
       { name: "reference", color: "green" },
       { name: "important", color: "red" },
@@ -15,10 +21,16 @@ export class Storage {
     { name: "important", color: "red" },
     { name: "media", color: "blue" },
     { name: "reference", color: "green" },
+    { name: "photo", color: "purple" },
+    { name: "photo/portrait", color: "yellow" },
+    { name: "photo/portrait/headshot", color: "gray" },
+    { name: "travel", color: "blue" },
+    { name: "travel/2024", color: "yellow" },
+    { name: "travel/2024/01/paris", color: "purple" },
   ];
 
   public getTags() {
-    return this.tags;
+    return buildTagTree(this.tags);
   }
 
   public deleteTag(tagName: string): void {
