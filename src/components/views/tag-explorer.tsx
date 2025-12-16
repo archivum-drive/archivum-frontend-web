@@ -2,6 +2,7 @@ import { Link as RouterLink } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { findTagNode, joinSegments, type TagTreeNode } from "../../lib/tag";
 import { SingletonStorage } from "../../mock/storage";
+import { NodesTable } from "../tables/nodes-table";
 import { TagsTable } from "../tables/tags-table";
 import {
   Breadcrumb,
@@ -21,11 +22,19 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
   const storage = SingletonStorage.getInstance();
   const [tags, setTags] = useState<TagTreeNode>(() => storage.getTags());
 
-  const currentNode = useMemo(
+  const nodes = useMemo(() => {
+    const allNodes = storage.getNodes();
+    const currentTagName = joinSegments(pathSegments);
+    return allNodes.filter((node) =>
+      node.tags.some((tag) => tag.name === currentTagName),
+    );
+  }, [pathSegments, storage]);
+
+  const currentTag = useMemo(
     () => findTagNode(tags, pathSegments),
     [tags, pathSegments],
   );
-  console.log("Current Node:", currentNode);
+  console.log("Current Node:", currentTag);
 
   function refreshData() {
     setTags(storage.getTags());
@@ -35,7 +44,7 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
     () => buildBreadcrumbs(pathSegments),
     [pathSegments],
   );
-  const hasPathError = !currentNode && pathSegments.length > 0;
+  const hasPathError = !currentTag && pathSegments.length > 0;
 
   return (
     <div className="space-y-2">
@@ -69,7 +78,7 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
                   to="/tags/$"
                   params={{ _splat: joinSegments(pathSegments) }}
                 >
-                  {currentNode?.segment}
+                  {currentTag?.segment}
                 </RouterLink>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -80,7 +89,10 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
       {hasPathError ? (
         <PathError pathSegments={pathSegments} />
       ) : (
-        <TagsTable entries={currentNode ?? tags} />
+        <>
+          <TagsTable entries={currentTag ?? tags} />
+          {pathSegments.length != 0 && <NodesTable nodes={nodes} />}
+        </>
       )}
     </div>
   );

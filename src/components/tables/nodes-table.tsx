@@ -112,7 +112,9 @@ export function NodesTable(props: NodeTableProps) {
           {table.getRowModel().rows.map((row) => (
             <NodeContextMenu
               node={row.original}
-              deleteNode={(nodeId) => props.deleteNode(nodeId)}
+              deleteNode={(nodeId) =>
+                console.log("Delete node with ID:", nodeId)
+              }
             >
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
@@ -131,7 +133,6 @@ export function NodesTable(props: NodeTableProps) {
 
 interface NodeTableProps {
   nodes: Node[];
-  deleteNode: (nodeId: string) => void;
 }
 
 function RenderNode({ node }: { node: Node }) {
