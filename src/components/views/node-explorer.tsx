@@ -1,14 +1,12 @@
-import { useState } from "react";
-import { SingletonStorage } from "../../mock/storage";
+import { useRepository, repositoryStore } from "../../lib/storage";
 import { RoundedButton } from "../ui/button";
 import { NodesTable } from "../tables/nodes-table";
 
 export function NodeExplorer() {
-  const repository = SingletonStorage.getInstance();
+  const repository = useRepository();
 
-  const [nodes, setNodes] = useState(repository.getAllNodes());
   function refreshData() {
-    setNodes(() => [...repository.getAllNodes()]);
+    void repositoryStore.refresh();
   }
 
   return (
@@ -20,7 +18,7 @@ export function NodeExplorer() {
         <RoundedButton onClick={refreshData}>Refresh</RoundedButton>
       </header>
 
-      <NodesTable nodes={nodes} />
+      <NodesTable nodes={repository.getAllNodes()} />
     </div>
   );
 }

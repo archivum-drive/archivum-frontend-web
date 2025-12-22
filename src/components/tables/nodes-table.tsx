@@ -29,11 +29,10 @@ import {
 } from "../ui/table";
 import { TagComponentHoverable } from "../ui/tag";
 import type { Node, Tag } from "archivum-typescript";
-import { SingletonStorage } from "../../mock/storage";
+import { repositoryStore } from "../../lib/storage";
 
 export function NodesTable(props: NodeTableProps) {
   const { nodes } = props;
-  const repository = SingletonStorage.getInstance();
 
   const columns = useMemo<ColumnDef<Node>[]>(
     () => [
@@ -118,7 +117,9 @@ export function NodesTable(props: NodeTableProps) {
             <NodeContextMenu
               key={row.id}
               node={row.original}
-              deleteNode={(nodeId) => repository.deleteNode(nodeId)}
+              deleteNode={(nodeId) =>
+                repositoryStore.mutate((repo) => repo.deleteNode(nodeId))
+              }
             >
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (

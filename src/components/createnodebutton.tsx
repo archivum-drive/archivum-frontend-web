@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { SingletonStorage } from "../mock/storage";
+import { repositoryStore } from "../lib/storage";
 import type { NodeType } from "archivum-typescript";
 
 type Inputs = {
@@ -12,8 +12,6 @@ export default function CreateNodeButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { register, handleSubmit } = useForm<Inputs>();
-
-  const repository = SingletonStorage.getInstance();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data);
@@ -32,13 +30,15 @@ export default function CreateNodeButton() {
       };
     }
 
-    repository.upsertNode({
-      id: 1,
-      deleted: false,
-      tags: [],
-      data: nodeType,
-      date_created: new Date().toLocaleString("de-DE"),
-      date_updated: new Date().toLocaleString("de-DE"),
+    repositoryStore.mutate((repo) => {
+      repo.upsertNode({
+        id: 1,
+        deleted: false,
+        tags: [],
+        data: nodeType,
+        date_created: new Date().toLocaleString("de-DE"),
+        date_updated: new Date().toLocaleString("de-DE"),
+      });
     });
     setIsModalOpen(false);
   };

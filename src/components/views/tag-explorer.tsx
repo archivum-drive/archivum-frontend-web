@@ -1,6 +1,6 @@
 import { Link as RouterLink } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { SingletonStorage } from "../../mock/storage";
+import { useMemo } from "react";
+import { repositoryStore, useRepository } from "../../lib/storage";
 import { TagsTable } from "../tables/tags-table";
 import {
   Breadcrumb,
@@ -18,11 +18,11 @@ export type TagLinkProps = {
 };
 
 export function TagExplorer({ pathSegments }: TagExplorerProps) {
-  const repository = SingletonStorage.getInstance();
-  const [tags, setTags] = useState(repository.getAllTags());
+  const repository = useRepository();
+  const tags = repository.getAllTags();
 
   function refreshData() {
-    setTags(repository.getAllTags());
+    void repositoryStore.refresh();
   }
 
   const currentTag = tags.find((t) => {

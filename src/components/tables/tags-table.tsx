@@ -16,11 +16,11 @@ import {
 } from "../ui/table";
 import { TagComponent } from "../ui/tag";
 import { Tag } from "archivum-typescript";
-import { SingletonStorage } from "../../mock/storage";
+import { useRepository } from "../../lib/storage";
 
 export function TagsTable(props: TagsTableProps) {
   const { path } = props;
-  const repository = SingletonStorage.getInstance();
+  const repository = useRepository();
 
   const tags: Tag[] = useMemo(() => {
     // if (path) {
