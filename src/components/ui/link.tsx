@@ -1,15 +1,17 @@
+import { Link as RouterLink } from "@tanstack/react-router";
+
 export default function Link({
-  href,
+  to,
   children,
   className,
 }: {
-  href: string;
+  to: string;
   children: React.ReactNode;
   className?: string;
 }) {
   return (
-    <a href={href} className={`${className} underline`}>
+    <RouterLink to={to} className={`${className} underline`}>
       {children}
-    </a>
+    </RouterLink>
   );
 }

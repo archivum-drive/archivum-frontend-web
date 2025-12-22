@@ -35,6 +35,17 @@ class RepositoryStore {
     return this.pullPromise;
   }
 
+  public async push() {
+    const data = this.repo.toJson();
+    await fetch("http://localhost:3000/push", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: data,
+    });
+  }
+
   public async refresh() {
     this.pullPromise = null;
     await this.ensurePulled();
