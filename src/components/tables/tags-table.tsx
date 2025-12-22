@@ -6,7 +6,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { joinSegments, Tag, type TagTreeNode } from "../../lib/tag";
 import {
   Table,
   TableBody,
@@ -16,26 +15,32 @@ import {
   TableRow,
 } from "../ui/table";
 import { TagComponent } from "../ui/tag";
+import { Tag } from "archivum-typescript";
+import { SingletonStorage } from "../../mock/storage";
 
 export function TagsTable(props: TagsTableProps) {
-  const { entries } = props;
+  const { path } = props;
+  const repository = SingletonStorage.getInstance();
 
   const tags: Tag[] = useMemo(() => {
-    const result: Tag[] = [];
-    entries.children.forEach((child) => {
-      result.push(new Tag(joinSegments(child.fullPathSegments), child.color));
-    });
-    return result;
-  }, [entries]);
+    // if (path) {
+    //   return repository.getTagByPath(path);
+    // } else {
+    return repository.getAllTags();
+    // }
+  }, [path, repository]);
 
   const columns = useMemo<ColumnDef<Tag>[]>(
     () => [
       {
         header: "Tag",
         cell: (info) => (
-          <RouterLink to="/tags/$" params={{ _splat: info.row.original.name }}>
+          <RouterLink
+            to="/tags/$"
+            params={{ _splat: info.row.original.path.join("/") }}
+          >
             <TagComponent
-              name={info.row.original.name}
+              name={info.row.original.path.join("/")}
               color={info.row.original.color}
             />
           </RouterLink>
@@ -92,6 +97,6 @@ export function TagsTable(props: TagsTableProps) {
 }
 
 interface TagsTableProps {
-  entries: TagTreeNode;
+  path?: string;
   // deleteTag: (tagName: string) => void;
 }

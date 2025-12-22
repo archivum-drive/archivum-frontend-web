@@ -1,8 +1,6 @@
 import { Link as RouterLink } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { findTagNode, joinSegments, type TagTreeNode } from "../../lib/tag";
 import { SingletonStorage } from "../../mock/storage";
-import { NodesTable } from "../tables/nodes-table";
 import { TagsTable } from "../tables/tags-table";
 import {
   Breadcrumb,
@@ -12,6 +10,7 @@ import {
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
 import { RoundedButton } from "../ui/button";
+import { NodesTable } from "../tables/nodes-table";
 
 export type TagLinkProps = {
   to: "/tags/$";
@@ -19,26 +18,26 @@ export type TagLinkProps = {
 };
 
 export function TagExplorer({ pathSegments }: TagExplorerProps) {
-  const storage = SingletonStorage.getInstance();
-  const [tags, setTags] = useState<TagTreeNode>(() => storage.getTags());
-
-  const nodes = useMemo(() => {
-    const allNodes = storage.getNodes();
-    const currentTagName = joinSegments(pathSegments);
-    return allNodes.filter((node) =>
-      node.tags.some((tag) => tag.name === currentTagName),
-    );
-  }, [pathSegments, storage]);
-
-  const currentTag = useMemo(
-    () => findTagNode(tags, pathSegments),
-    [tags, pathSegments],
-  );
-  console.log("Current Node:", currentTag);
+  const repository = SingletonStorage.getInstance();
+  const [tags, setTags] = useState(repository.getAllTags());
 
   function refreshData() {
-    setTags(storage.getTags());
+    setTags(repository.getAllTags());
   }
+
+  const currentTag = tags.find((t) => {
+    const tagPath = t.path.join("/");
+    const requestedPath = pathSegments.join("/");
+    return tagPath === requestedPath;
+  });
+
+  const nodes = useMemo(() => {
+    if (currentTag) {
+      return repository.getNodesWithTag(currentTag.id);
+    } else {
+      return [];
+    }
+  }, [currentTag, repository]);
 
   const breadcrumbs = useMemo(
     () => buildBreadcrumbs(pathSegments),
@@ -76,9 +75,9 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
               <BreadcrumbLink asChild>
                 <RouterLink
                   to="/tags/$"
-                  params={{ _splat: joinSegments(pathSegments) }}
+                  params={{ _splat: pathSegments.join("/") }}
                 >
-                  {currentTag?.segment}
+                  {/* {currentTag?.segment} */}
                 </RouterLink>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -90,7 +89,7 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
         <PathError pathSegments={pathSegments} />
       ) : (
         <>
-          <TagsTable entries={currentTag ?? tags} />
+          <TagsTable path={currentTag?.path.join("/")} />
           {pathSegments.length != 0 && <NodesTable nodes={nodes} />}
         </>
       )}
@@ -111,7 +110,7 @@ function buildBreadcrumbs(pathSegments: string[]): BreadcrumbItem[] {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       label: "Tags",
-      link: { to: "/tags/$", params: { _splat: joinSegments([]) } },
+      link: { to: "/tags/$", params: { _splat: "" } },
     },
   ];
 
@@ -122,7 +121,7 @@ function buildBreadcrumbs(pathSegments: string[]): BreadcrumbItem[] {
       label: segment,
       link: {
         to: "/tags/$",
-        params: { _splat: joinSegments(fullPathSegments) },
+        params: { _splat: fullPathSegments.join("/") },
       },
     });
   }
@@ -131,7 +130,7 @@ function buildBreadcrumbs(pathSegments: string[]): BreadcrumbItem[] {
 }
 
 function PathError({ pathSegments }: { pathSegments: string[] }) {
-  const attemptedPath = joinSegments(pathSegments);
+  const attemptedPath = pathSegments.join("/");
   return (
     <div className="rounded-2xl border border-red-200/70 bg-red-50/80 p-5 text-red-900 text-sm">
       <p className="font-semibold">Tag path not found</p>

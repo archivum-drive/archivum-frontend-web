@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { BookmarkNode, FileNode } from "../lib/node";
 import { SingletonStorage } from "../mock/storage";
+import type { NodeType } from "archivum-typescript";
 
 type Inputs = {
   name: string;
@@ -13,18 +13,33 @@ export default function CreateNodeButton() {
 
   const { register, handleSubmit } = useForm<Inputs>();
 
-  const storage = SingletonStorage.getInstance();
+  const repository = SingletonStorage.getInstance();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data);
     const { name, type } = data;
-    let newNode;
+
+    let nodeType: NodeType;
     if (type === "file") {
-      newNode = new FileNode(Date.now().toString(), name);
+      nodeType = {
+        type: "file",
+        File: { filename: name, size: 0 },
+      };
     } else {
-      newNode = new BookmarkNode(Date.now().toString(), name);
+      nodeType = {
+        type: "bookmark",
+        Bookmark: { url: name },
+      };
     }
-    storage.addNode(newNode);
+
+    repository.upsertNode({
+      id: 1,
+      deleted: false,
+      tags: [],
+      data: nodeType,
+      date_created: new Date().toLocaleString("de-DE"),
+      date_updated: new Date().toLocaleString("de-DE"),
+    });
     setIsModalOpen(false);
   };
 

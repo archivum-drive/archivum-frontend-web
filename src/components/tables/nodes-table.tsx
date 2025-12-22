@@ -7,8 +7,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
-import { BookmarkNode, FileNode, type Node } from "../../lib/node";
-import { Tag } from "../../lib/tag";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -30,9 +28,12 @@ import {
   TableRow,
 } from "../ui/table";
 import { TagComponentHoverable } from "../ui/tag";
+import type { Node, Tag } from "archivum-typescript";
+import { SingletonStorage } from "../../mock/storage";
 
 export function NodesTable(props: NodeTableProps) {
   const { nodes } = props;
+  const repository = SingletonStorage.getInstance();
 
   const columns = useMemo<ColumnDef<Node>[]>(
     () => [
@@ -49,14 +50,18 @@ export function NodesTable(props: NodeTableProps) {
         header: () => <div className="text-right">Date Modified</div>,
         accessorKey: "date_updated",
         cell: (info) => (
-          <div className="text-right">{info.getValue<String>()}</div>
+          <div key={info.cell.id} className="text-right">
+            {info.getValue<String>()}
+          </div>
         ),
       },
       {
         header: () => <div className="text-right">Date Created</div>,
         accessorKey: "date_created",
         cell: (info) => (
-          <div className="text-right">{info.getValue<String>()}</div>
+          <div key={info.cell.id} className="text-right">
+            {info.getValue<String>()}
+          </div>
         ),
       },
     ],
@@ -111,10 +116,9 @@ export function NodesTable(props: NodeTableProps) {
         <TableBody>
           {table.getRowModel().rows.map((row) => (
             <NodeContextMenu
+              key={row.id}
               node={row.original}
-              deleteNode={(nodeId) =>
-                console.log("Delete node with ID:", nodeId)
-              }
+              deleteNode={(nodeId) => repository.deleteNode(nodeId)}
             >
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
@@ -137,17 +141,17 @@ interface NodeTableProps {
 
 function RenderNode({ node }: { node: Node }) {
   return (
-    <div className="flex items-center gap-2">
+    <div key={node.id} className="flex items-center gap-2">
       <RenderType node={node} />
       <RenderName node={node} />
     </div>
   );
 }
 function RenderName({ node }: { node: Node }) {
-  if (node instanceof FileNode) {
-    return <div>File: {node.label}</div>;
-  } else if (node instanceof BookmarkNode) {
-    return <div>Bookmark: {node.url}</div>;
+  if (node.data.type === "file") {
+    return <div>File: {node.data.File.filename}</div>;
+  } else if (node.data.type === "bookmark") {
+    return <div>Bookmark: {node.data.Bookmark.url}</div>;
   } else {
     return <div>Unknown Node Type</div>;
   }
@@ -157,17 +161,17 @@ function RenderTags({ tags }: { tags: Tag[] }) {
   return (
     <>
       {tags.map((tag) => (
-        <DropdownMenu>
+        <DropdownMenu key={tag.id}>
           <DropdownMenuTrigger asChild>
             <TagComponentHoverable
-              key={tag.name}
-              name={tag.name}
+              key={tag.path.join("/")}
+              name={tag.path.join("/")}
               color={tag.color}
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem>
-              <RouterLink to="/tags/$" params={{ _splat: tag.name }}>
+              <RouterLink to="/tags/$" params={{ _splat: tag.path.join("/") }}>
                 Go to label
               </RouterLink>
             </DropdownMenuItem>
@@ -180,9 +184,10 @@ function RenderTags({ tags }: { tags: Tag[] }) {
 }
 
 function RenderType({ node }: { node: Node }) {
-  if (node instanceof FileNode) {
+  console.log("Rendering type for node:", node);
+  if (node.data.type === "file") {
     return <FileIcon />;
-  } else if (node instanceof BookmarkNode) {
+  } else if (node.data.type === "bookmark") {
     return <Link2Icon />;
   }
 
@@ -192,7 +197,7 @@ function RenderType({ node }: { node: Node }) {
 function NodeContextMenu(props: {
   node: Node;
   children: React.ReactNode;
-  deleteNode: (nodeId: string) => void;
+  deleteNode: (nodeId: number) => void;
 }) {
   return (
     <ContextMenu>

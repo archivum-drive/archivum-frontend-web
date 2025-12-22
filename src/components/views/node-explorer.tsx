@@ -1,20 +1,14 @@
 import { useState } from "react";
 import { SingletonStorage } from "../../mock/storage";
-import { NodesTable } from "../tables/nodes-table";
 import { RoundedButton } from "../ui/button";
+import { NodesTable } from "../tables/nodes-table";
 
 export function NodeExplorer() {
-  const storage = SingletonStorage.getInstance();
+  const repository = SingletonStorage.getInstance();
 
-  const [nodes, setNodes] = useState(storage.getNodes());
+  const [nodes, setNodes] = useState(repository.getAllNodes());
   function refreshData() {
-    setNodes(() => [...storage.getNodes()]);
-  }
-
-  function deleteNode(nodeId: string): void {
-    console.log("Deleting node with ID:", nodeId);
-    storage.deleteNode(nodeId);
-    refreshData();
+    setNodes(() => [...repository.getAllNodes()]);
   }
 
   return (
@@ -26,7 +20,7 @@ export function NodeExplorer() {
         <RoundedButton onClick={refreshData}>Refresh</RoundedButton>
       </header>
 
-      <NodesTable nodes={nodes} deleteNode={deleteNode} />
+      <NodesTable nodes={nodes} />
     </div>
   );
 }

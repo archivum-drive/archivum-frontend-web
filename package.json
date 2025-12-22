@@ -18,7 +18,7 @@
     "@tailwindcss/vite": "^4.1.16",
     "@tanstack/react-router": "^1.140.5",
     "@tanstack/react-table": "^8.21.3",
-    "archivum-core-wasm": "file:../archivum-typescript/packages/archivum-core-wasm",
+    "archivum-typescript": "file:../archivum-typescript/packages/archivum-typescript",
     "clsx": "^2.1.1",
     "lucide-react": "^0.552.0",
     "react": "^19.1.0",
