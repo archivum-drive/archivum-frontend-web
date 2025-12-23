@@ -1,4 +1,4 @@
-import type { NodeType } from "archivum-typescript";
+import type { TagColor } from "archivum-typescript";
 import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { repositoryStore } from "../lib/storage";
@@ -16,41 +16,22 @@ import { Input, Label } from "./ui/input";
 
 type Inputs = {
   name: string;
-  type: "file" | "bookmark";
+  color: TagColor;
 };
 
-export default function CreateNodeButton() {
+export default function CreateTagButton() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { register, handleSubmit } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data);
-    const { name, type } = data;
-
-    let nodeType: NodeType;
-    if (type === "file") {
-      nodeType = {
-        type: "file",
-        File: { filename: name, size: 0 },
-      };
-    } else {
-      nodeType = {
-        type: "bookmark",
-        Bookmark: { url: name },
-      };
-    }
+    const { name, color } = data;
 
     repositoryStore.mutate((repo) => {
-      const id = repo.getNextNodeId();
-      repo.upsertNode({
-        id: id,
-        deleted: false,
-        tags: [],
-        data: nodeType,
-        date_created: new Date().toLocaleString("de-DE"),
-        date_updated: new Date().toLocaleString("de-DE"),
-      });
+      const id = repo.getNextTagId();
+      const path = name.split("/").map((segment) => segment.trim());
+      repo.upsertTag({ id, path: path, color, deleted: false });
     });
     setIsModalOpen(false);
   };
@@ -59,11 +40,11 @@ export default function CreateNodeButton() {
     <>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogTrigger asChild>
-          <Button className="w-full">Create New Node</Button>
+          <Button className="w-full">Create New Tag</Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Node</DialogTitle>
+            <DialogTitle>Create New Tag</DialogTitle>
           </DialogHeader>
 
           <form
@@ -72,7 +53,7 @@ export default function CreateNodeButton() {
             onSubmit={handleSubmit(onSubmit)}
           >
             <div className="grid gap-3">
-              <Label htmlFor="name">Node Name</Label>
+              <Label htmlFor="name">Tag Name</Label>
               <Input
                 {...register("name", { required: true })}
                 type="text"
@@ -80,14 +61,18 @@ export default function CreateNodeButton() {
               />
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="type">Node Type</Label>
+              <Label htmlFor="color">Tag Color</Label>
               <select
-                {...register("type", { required: true })}
-                id="type"
+                {...register("color", { required: true })}
+                id="color"
                 className="block w-full rounded-md border border-neutral-300 bg-background-light p-2 shadow-sm"
               >
-                <option value="file">File</option>
-                <option value="bookmark">Bookmark</option>
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+                <option value="yellow">Yellow</option>
+                <option value="purple">Purple</option>
+                <option value="gray">Gray</option>
               </select>
             </div>
           </form>

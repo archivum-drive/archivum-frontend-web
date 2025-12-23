@@ -11,7 +11,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
-import { RoundedButton } from "../ui/button";
+import { Button } from "../ui/button";
 
 export type TagLinkProps = {
   to: "/tags/$";
@@ -57,7 +57,9 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
           <div className="mb-2">
             <h1 className="font-[Orbit] text-4xl">Tags</h1>
           </div>
-          <RoundedButton onClick={refreshData}>Refresh</RoundedButton>
+          <Button variant={"outline"} onClick={refreshData}>
+            Refresh
+          </Button>
         </header>
 
         <div className="text-current/70 text-sm">Loading…</div>
@@ -71,7 +73,9 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
         <div className="mb-2">
           <h1 className="font-[Orbit] text-4xl">Tags</h1>
         </div>
-        <RoundedButton onClick={refreshData}>Refresh</RoundedButton>
+        <Button variant={"outline"} onClick={refreshData}>
+          Refresh
+        </Button>
       </header>
 
       <div className="flex flex-wrap items-center justify-between gap-3">

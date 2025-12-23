@@ -67,7 +67,7 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:outline-hidden focus:bg-muted disabled:pointer-events-none data-[state=open]:bg-muted [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+            className="absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:bg-muted focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-muted [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
           >
             <XIcon />
             <span className="sr-only">Close</span>
@@ -121,7 +121,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-muted text-sm", className)}
+      className={cn("text-sm text-text/60", className)}
       {...props}
     />
   );

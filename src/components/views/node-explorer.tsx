@@ -1,6 +1,6 @@
-import { useRepository, repositoryStore } from "../../lib/storage";
-import { RoundedButton } from "../ui/button";
+import { repositoryStore, useRepository } from "../../lib/storage";
 import { NodesTable } from "../tables/nodes-table";
+import { Button } from "../ui/button";
 
 export function NodeExplorer() {
   const repository = useRepository();
@@ -15,7 +15,9 @@ export function NodeExplorer() {
         <div>
           <h1 className="font-[Orbit] text-4xl">All my Data</h1>
         </div>
-        <RoundedButton onClick={refreshData}>Refresh</RoundedButton>
+        <Button variant={"outline"} onClick={refreshData}>
+          Refresh
+        </Button>
       </header>
 
       <NodesTable nodes={repository.getAllNodes()} />
