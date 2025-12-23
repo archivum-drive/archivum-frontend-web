@@ -5,7 +5,9 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { Tag } from "archivum-typescript";
 import { useMemo } from "react";
+import { useRepository } from "../../lib/storage";
 import {
   Table,
   TableBody,
@@ -15,19 +17,19 @@ import {
   TableRow,
 } from "../ui/table";
 import { TagComponent } from "../ui/tag";
-import { Tag } from "archivum-typescript";
-import { useRepository } from "../../lib/storage";
 
 export function TagsTable(props: TagsTableProps) {
   const { path } = props;
   const repository = useRepository();
 
   const tags: Tag[] = useMemo(() => {
-    // if (path) {
-    //   return repository.getTagByPath(path);
-    // } else {
-    return repository.getAllTags();
-    // }
+    if (path) {
+      const tag = repository.getTagByPath(path);
+      if (!tag) return [];
+      return repository.getChildTags(tag.id);
+    } else {
+      return repository.getAllTags();
+    }
   }, [path, repository]);
 
   const columns = useMemo<ColumnDef<Tag>[]>(

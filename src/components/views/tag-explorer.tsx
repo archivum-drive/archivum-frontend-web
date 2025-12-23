@@ -1,6 +1,8 @@
 import { Link as RouterLink } from "@tanstack/react-router";
+import type { Tag } from "archivum-typescript";
 import { useMemo } from "react";
-import { repositoryStore, useRepository } from "../../lib/storage";
+import { repositoryStore, useRepositoryState } from "../../lib/storage";
+import { NodesTable } from "../tables/nodes-table";
 import { TagsTable } from "../tables/tags-table";
 import {
   Breadcrumb,
@@ -10,7 +12,6 @@ import {
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
 import { RoundedButton } from "../ui/button";
-import { NodesTable } from "../tables/nodes-table";
 
 export type TagLinkProps = {
   to: "/tags/$";
@@ -18,32 +19,55 @@ export type TagLinkProps = {
 };
 
 export function TagExplorer({ pathSegments }: TagExplorerProps) {
-  const repository = useRepository();
-  const tags = repository.getAllTags();
+  const { repository, status } = useRepositoryState();
 
   function refreshData() {
     void repositoryStore.refresh();
   }
 
-  const currentTag = tags.find((t) => {
-    const tagPath = t.path.join("/");
-    const requestedPath = pathSegments.join("/");
-    return tagPath === requestedPath;
-  });
+  const attemptedPath = pathSegments.join("/");
+
+  const currentTag = useMemo<Tag | undefined>(() => {
+    if (status === "ready" && pathSegments.length !== 0) {
+      try {
+        return repository.getTagByPath(attemptedPath);
+      } catch (e) {
+        console.warn("Error fetching tag by path:", e);
+        return undefined;
+      }
+    }
+  }, [repository, status, attemptedPath, pathSegments]);
+
+  const isLoading = status === "loading";
 
   const nodes = useMemo(() => {
-    if (currentTag) {
-      return repository.getNodesWithTag(currentTag.id);
-    } else {
-      return [];
-    }
+    return currentTag ? repository.getNodesWithTag(currentTag.id) : [];
   }, [currentTag, repository]);
 
   const breadcrumbs = useMemo(
     () => buildBreadcrumbs(pathSegments),
     [pathSegments],
   );
-  const hasPathError = !currentTag && pathSegments.length > 0;
+
+  const hasPathError = useMemo(() => {
+    if (status === "ready" && !currentTag && pathSegments.length > 0)
+      return true;
+  }, [status, currentTag, pathSegments.length]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        <header className="flex flex-wrap items-center justify-between gap-3">
+          <div className="mb-2">
+            <h1 className="font-[Orbit] text-4xl">Tags</h1>
+          </div>
+          <RoundedButton onClick={refreshData}>Refresh</RoundedButton>
+        </header>
+
+        <div className="text-current/70 text-sm">Loading…</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2">
@@ -77,7 +101,7 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
                   to="/tags/$"
                   params={{ _splat: pathSegments.join("/") }}
                 >
-                  {/* {currentTag?.segment} */}
+                  {currentTag?.path.slice(-1)[0]}
                 </RouterLink>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -90,7 +114,7 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
       ) : (
         <>
           <TagsTable path={currentTag?.path.join("/")} />
-          {pathSegments.length != 0 && <NodesTable nodes={nodes} />}
+          {pathSegments.length !== 0 && <NodesTable nodes={nodes} />}
         </>
       )}
     </div>

@@ -185,7 +185,6 @@ function RenderTags({ tags }: { tags: Tag[] }) {
 }
 
 function RenderType({ node }: { node: Node }) {
-  console.log("Rendering type for node:", node);
   if (node.data.type === "file") {
     return <FileIcon />;
   } else if (node.data.type === "bookmark") {

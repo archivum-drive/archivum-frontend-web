@@ -3,11 +3,15 @@ import { useEffect, useSyncExternalStore } from "react";
 
 type Listener = () => void;
 
+export type RepoStatus = "loading" | "ready";
+
 class RepositoryStore {
   private repo: Repository = new Repository();
   private version = 0;
   private listeners = new Set<Listener>();
   private pullPromise: Promise<void> | null = null;
+
+  private status: RepoStatus = "loading";
 
   private emit() {
     this.version++;
@@ -16,20 +20,22 @@ class RepositoryStore {
 
   public subscribe = (listener: Listener) => {
     this.listeners.add(listener);
-    return () => {
-      this.listeners.delete(listener);
-    };
+    return () => this.listeners.delete(listener);
   };
 
   public getSnapshot = () => this.version;
 
   public getRepository = () => this.repo;
+  public getStatus = () => this.status;
 
   public ensurePulled() {
     if (!this.pullPromise) {
-      this.pullPromise = this.pull().catch((err) => {
-        this.pullPromise = null;
-        throw err;
+      this.status = "loading";
+      this.emit();
+
+      this.pullPromise = this.pull().then(() => {
+        this.status = "ready";
+        this.emit();
       });
     }
     return this.pullPromise;
@@ -66,7 +72,7 @@ class RepositoryStore {
 
 export const repositoryStore = new RepositoryStore();
 
-export function useRepository(): Repository {
+export function useRepository() {
   useSyncExternalStore(
     repositoryStore.subscribe,
     repositoryStore.getSnapshot,
@@ -78,4 +84,22 @@ export function useRepository(): Repository {
   }, []);
 
   return repositoryStore.getRepository();
+}
+
+export function useRepositoryState() {
+  useSyncExternalStore(
+    repositoryStore.subscribe,
+    repositoryStore.getSnapshot,
+    repositoryStore.getSnapshot,
+  );
+
+  useEffect(() => {
+    void repositoryStore.ensurePulled().catch(() => {});
+  }, []);
+
+  return {
+    repository: repositoryStore.getRepository(),
+    status: repositoryStore.getStatus(),
+    refresh: () => repositoryStore.refresh(),
+  };
 }
