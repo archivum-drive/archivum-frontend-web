@@ -1,7 +1,7 @@
+import type { NodeType } from "archivum-typescript";
 import { useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { repositoryStore } from "../lib/storage";
-import type { NodeType } from "archivum-typescript";
 
 type Inputs = {
   name: string;
@@ -31,8 +31,9 @@ export default function CreateNodeButton() {
     }
 
     repositoryStore.mutate((repo) => {
+      const id = repo.getNextNodeId();
       repo.upsertNode({
-        id: 1,
+        id: id,
         deleted: false,
         tags: [],
         data: nodeType,

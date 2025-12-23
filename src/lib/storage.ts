@@ -60,6 +60,7 @@ class RepositoryStore {
   public mutate(mutator: (repo: Repository) => void) {
     mutator(this.repo);
     this.emit();
+    this.push();
   }
 
   private async pull() {
@@ -94,7 +95,7 @@ export function useRepositoryState() {
   );
 
   useEffect(() => {
-    void repositoryStore.ensurePulled().catch(() => {});
+    void repositoryStore.ensurePulled();
   }, []);
 
   return {

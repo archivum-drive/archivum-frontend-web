@@ -25,18 +25,16 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
     void repositoryStore.refresh();
   }
 
-  const attemptedPath = pathSegments.join("/");
-
   const currentTag = useMemo<Tag | undefined>(() => {
     if (status === "ready" && pathSegments.length !== 0) {
       try {
-        return repository.getTagByPath(attemptedPath);
+        return repository.getTagByPath(pathSegments);
       } catch (e) {
         console.warn("Error fetching tag by path:", e);
         return undefined;
       }
     }
-  }, [repository, status, attemptedPath, pathSegments]);
+  }, [repository, status, pathSegments]);
 
   const isLoading = status === "loading";
 
@@ -113,7 +111,7 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
         <PathError pathSegments={pathSegments} />
       ) : (
         <>
-          <TagsTable path={currentTag?.path.join("/")} />
+          <TagsTable pathSegments={currentTag?.path} />
           {pathSegments.length !== 0 && <NodesTable nodes={nodes} />}
         </>
       )}

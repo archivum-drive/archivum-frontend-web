@@ -19,18 +19,18 @@ import {
 import { TagComponent } from "../ui/tag";
 
 export function TagsTable(props: TagsTableProps) {
-  const { path } = props;
+  const { pathSegments } = props;
   const repository = useRepository();
 
   const tags: Tag[] = useMemo(() => {
-    if (path) {
-      const tag = repository.getTagByPath(path);
+    if (pathSegments && pathSegments.length > 0) {
+      const tag = repository.getTagByPath(pathSegments);
       if (!tag) return [];
       return repository.getChildTags(tag.id);
     } else {
       return repository.getAllTags();
     }
-  }, [path, repository]);
+  }, [pathSegments, repository]);
 
   const columns = useMemo<ColumnDef<Tag>[]>(
     () => [
@@ -99,6 +99,6 @@ export function TagsTable(props: TagsTableProps) {
 }
 
 interface TagsTableProps {
-  path?: string;
+  pathSegments?: string[];
   // deleteTag: (tagName: string) => void;
 }
