@@ -38,9 +38,7 @@ export function TagExplorer({ pathSegments }: TagExplorerProps) {
 
   const isLoading = status === "loading";
 
-  const nodes = useMemo(() => {
-    return currentTag ? repository.getNodesWithTag(currentTag.id) : [];
-  }, [currentTag, repository]);
+  const nodes = currentTag ? repository.getNodesWithTag(currentTag.id) : [];
 
   const breadcrumbs = useMemo(
     () => buildBreadcrumbs(pathSegments),

@@ -1,3 +1,4 @@
+import { ContextMenuItem as ContextMenuItemPrimitive } from "@radix-ui/react-context-menu";
 import { FileIcon, Link2Icon } from "@radix-ui/react-icons";
 import { Link as RouterLink } from "@tanstack/react-router";
 import {
@@ -6,19 +7,26 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import type { Node, Tag } from "archivum-typescript";
 import { useMemo } from "react";
+import { repositoryStore, useRepository } from "../../lib/storage";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../ui/command";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "../ui/context-menu";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown";
 import {
   Table,
   TableBody,
@@ -28,11 +36,11 @@ import {
   TableRow,
 } from "../ui/table";
 import { TagComponentHoverable } from "../ui/tag";
-import type { Node, Tag } from "archivum-typescript";
-import { repositoryStore } from "../../lib/storage";
 
 export function NodesTable(props: NodeTableProps) {
   const { nodes } = props;
+
+  const repository = useRepository();
 
   const columns = useMemo<ColumnDef<Node>[]>(
     () => [
@@ -43,7 +51,9 @@ export function NodesTable(props: NodeTableProps) {
       {
         header: "Tags",
         accessorKey: "tags",
-        cell: (info) => <RenderTags tags={info.getValue<Tag[]>()} />,
+        cell: (info) => (
+          <RenderTags tags={info.getValue<Tag[]>()} node={info.row.original} />
+        ),
       },
       {
         header: () => <div className="text-right">Date Modified</div>,
@@ -117,9 +127,7 @@ export function NodesTable(props: NodeTableProps) {
             <NodeContextMenu
               key={row.id}
               node={row.original}
-              deleteNode={(nodeId) =>
-                repositoryStore.mutate((repo) => repo.deleteNode(nodeId))
-              }
+              tags={repository.getAllTags()}
             >
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
@@ -158,26 +166,36 @@ function RenderName({ node }: { node: Node }) {
   }
 }
 
-function RenderTags({ tags }: { tags: Tag[] }) {
+function RenderTags({ tags, node }: { tags: Tag[]; node: Node }) {
   return (
     <>
       {tags.map((tag) => (
-        <DropdownMenu key={tag.id}>
-          <DropdownMenuTrigger asChild>
+        <ContextMenu key={tag.id}>
+          <ContextMenuTrigger asChild>
             <TagComponentHoverable
               key={tag.path.join("/")}
               name={tag.path.join("/")}
               color={tag.color}
             />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem>
               <RouterLink to="/tags/$" params={{ _splat: tag.path.join("/") }}>
-                Go to label
+                Go to Tag
               </RouterLink>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </ContextMenuItem>
+            <ContextMenuItem
+              variant="destructive"
+              onSelect={() =>
+                repositoryStore.mutate((repo) =>
+                  repo.untagNode(node.id, tag.id),
+                )
+              }
+            >
+              Remove tag
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
       ))}
       {/* <TagSkeleton /> */}
     </>
@@ -196,16 +214,51 @@ function RenderType({ node }: { node: Node }) {
 
 function NodeContextMenu(props: {
   node: Node;
+  tags: Tag[];
   children: React.ReactNode;
-  deleteNode: (nodeId: number) => void;
 }) {
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>{props.children}</ContextMenuTrigger>
       <ContextMenuContent>
+        <ContextMenuSub>
+          <ContextMenuSubTrigger>Add Tag</ContextMenuSubTrigger>
+          <ContextMenuSubContent className="p-0">
+            <Command>
+              <CommandInput
+                placeholder="Filter label..."
+                autoFocus={true}
+                className="h-9"
+              />
+              <CommandList>
+                <CommandEmpty>No label found.</CommandEmpty>
+                <CommandGroup>
+                  {props.tags.map((tag) => (
+                    <CommandItem
+                      key={tag.id}
+                      value={tag.path.join("/")}
+                      onSelect={() => {
+                        repositoryStore.mutate((repo) =>
+                          repo.tagNode(props.node.id, tag.id),
+                        );
+                      }}
+                    >
+                      <ContextMenuItemPrimitive data-slot="context-menu-item">
+                        {tag.path.join("/")}
+                      </ContextMenuItemPrimitive>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </ContextMenuSubContent>
+        </ContextMenuSub>
+
         <ContextMenuItem
           variant="destructive"
-          onSelect={() => props.deleteNode(props.node.id)}
+          onSelect={() =>
+            repositoryStore.mutate((repo) => repo.deleteNode(props.node.id))
+          }
         >
           Delete Node
         </ContextMenuItem>
